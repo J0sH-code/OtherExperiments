@@ -1,7 +1,7 @@
 package backend.chatbot;
 
 public class geminiAPI {
-    private final String API_KEY = "AIzaSyCT4T1DwcjIHMEeci-bN7TTE16WDNJAmjA";
+    private final String API_KEY = System.getenv("GEMINI_API_KEY");
     private final String keyHeader = "x-goog-api-key";
     private final String uri = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 

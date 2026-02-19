@@ -2,7 +2,7 @@ package backend.chatbot;
 
 public class ollamaAPI {
 
-    private final String API_KEY = null;
+    private final String API_KEY = "Bearer " + System.getenv("OLLAMA_API_KEY");
     private final String keyHeader = "Authorization";
     private final String uri = "https://ollama.com/api/generate";
 

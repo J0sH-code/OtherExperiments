@@ -26,16 +26,16 @@ public class myChatBot {
                     System.out.print("Prompt: ");
                     String prompt = input.nextLine();
                     var req = requestHandler.sendRequest(new geminiAPI(), prompt);
-                    var res = responseHandler.response(client, req);
+                    var res = responseHandler.response(client, req, new geminiAPI());
 
                     System.out.println();
-                    //System.out.println("Response: " + messageHandler.extractText(new geminiAPI(), res.body()));
+                    System.out.println("Response: " + messageHandler.extractText(new geminiAPI(), res.body()));
                 }
                 case "ollama" -> {
                     System.out.print("Prompt: ");
                     String prompt = input.nextLine();
                     var req = requestHandler.sendRequest(new ollamaAPI(), prompt);
-                    var res = responseHandler.response(client, req);
+                    var res = responseHandler.response(client, req, new ollamaAPI());
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(res.body()));
                     
