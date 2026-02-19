@@ -11,19 +11,28 @@ import java.net.URI;
 import java.net.http.*;
 import javafx.application.*;
 import javafx.scene.*;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.*;
 import javafx.scene.control.*;
 
 public class Main extends Application {
 
+    private ComboBox<String> modelSelector;
     private TextArea outputArea;
     private TextField inputField;
 
 
     @Override
     public void start(Stage primaryStage) {
+
+        modelSelector = new ComboBox<>();
+        modelSelector.getItems().addAll(
+                "qwen2.5-coder:0.5b",
+                "llama3",
+                "dolphin-mistral",
+                "phi"
+        );
+        modelSelector.setValue("qwen2.5-coder:0.5b");
 
         outputArea = new TextArea();
         outputArea.setEditable(false);
@@ -43,7 +52,7 @@ public class Main extends Application {
         });
 
 
-        VBox root = new VBox(10, inputField, enter, outputArea);
+        VBox root = new VBox(10, inputField, enter, outputArea, modelSelector);
 
 
 
@@ -61,24 +70,32 @@ public class Main extends Application {
 
 
     }
-
+//    static String jsonFormatter(String text) {
+//        return "\"" + text
+//                .replace("\\", "\\\\")
+//                .replace("\"", "\\\"")
+//                .replace("\n", "\\n")
+//                .replace("\r", "\\r")
+//                .replace("\t", "\\t")
+//                + "\"";
+//    }
 
     private void sendPrompt() throws IOException, InterruptedException {
             String prompt = inputField.getText();
+            String selectedModel = modelSelector.getValue();
 
-            String escapedPrompt = prompt.replace("\"", "\\\"");
             outputArea.clear();
 
             new Thread(() -> {
                 try {
 
-                    String json = String.format("""
+                    String json = """
                             {
-                            "model": "qwen2.5-coder:0.5b",
+                            "model": "%s",
                             "prompt": "%s",
                             "stream": true
                             }
-                            """.formatted(escapedPrompt), prompt);
+                            """.formatted(selectedModel, prompt);
 
                     HttpClient client = HttpClient.newHttpClient();
 
@@ -112,18 +129,81 @@ public class Main extends Application {
 
     }
 
-    static String extractText(String response) {
-        String search = "\"response\":\"";
-        int start = response.indexOf(search) + search.length();
-        int end = response.indexOf("\"", start);
+    static String extractText(String line) {
+        try {
+            Pattern pattern = Pattern.compile("\"response\":\"(.*?)\"");
+            Matcher matcher = pattern.matcher(line);
 
-        if (start > search.length() - 1 && end > start) {
-            return response.substring(start, end);
+            if (matcher.find()) {
+                String raw = matcher.group(1);
+
+                return raw
+                        .replace("\\\\", "\\")
+                        .replace("\\\"", "\"")
+                        .replace("\\n", "\n")
+                        .replace("\\r", "\r")
+                        .replace("\\t", "\t");
+            }
+
+        } catch (Exception ignored) {
+           ignored.printStackTrace();
         }
-        else {
-            return "\n";
-        }
+
+        return "";
     }
+}
+
+
+
+//    static String extractText(String response) {
+//        try {
+//            int start = response.indexOf("\"response\":\"");
+//            if (start == - 1) return " ";
+//
+//            start += 12;
+//
+//            StringBuilder result = new StringBuilder();
+//            boolean escaping = false;
+//
+//            for (int i = start; i < response.length(); i++) {
+//                char character = response.charAt(i);
+//
+//                if (escaping) {
+//
+//                    switch (character) {
+//                        case 'n' -> result.append('\n');
+//                        case 'r' -> result.append('\r');
+//                        case 't' -> result.append('\t');
+//                        case '"' -> result.append('"');
+//                        case '\\' -> result.append('\\');
+//                        default -> result.append(character);
+//                    }
+//                } else if (character == '\\') {
+//                    escaping = true;
+//                } else if (character == '"') {
+//                    break;
+//                } else {
+//                    result.append(character);
+//                }
+//            }
+//
+//
+//                return result.toString();
+//
+//            } catch (Exception exempt) {
+//            return "";
+
+//        String search = "\"response\":\"";
+//        int start = response.indexOf(search) + search.length();
+//        int end = response.indexOf("\"", start);
+//
+//        if (start > search.length() - 1 && end > start) {
+//            return response.substring(start, end);
+//        }
+//        else {
+//            return "\n";
+//        }
+//    }
     //    static String expressions(String line){
     //        Pattern pattern = Pattern.compile("\"[^<]+\"", Pattern.CASE_INSENSITIVE);
     //        Matcher matcher = pattern.matcher(line);
@@ -137,4 +217,3 @@ public class Main extends Application {
     //        }
     //        return result.toString();
     //    }
-}
