@@ -14,11 +14,17 @@ public class myServer {
         server.start();
     }
 
-    static class reqHandler implements  HttpHandler {
+    static class reqHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String response = "Server is working";
             exchange.sendResponseHeaders(200, response.getBytes().length);
+
+
+            System.out.println("Response local address: " + exchange.getLocalAddress());
+            System.out.println("Response Protocol: " + exchange.getProtocol());
+            System.out.println();
+            
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
             os.close();

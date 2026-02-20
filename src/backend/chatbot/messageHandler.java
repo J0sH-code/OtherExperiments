@@ -24,9 +24,7 @@ public class messageHandler {
         return jsonResponse.substring(start, end)
                 .replace("\\n", "\n")
                 .replace("\\\"", "\"");
-    }
-
-    ;
+    };
     
     static String extractText(ollamaAPI ollamaAPI, String jsonResponse) {
         String searchKey = "\"response\":\"";
