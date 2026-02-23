@@ -33,13 +33,18 @@ public class myServer {
             System.out.println("Request body: " + new String(resBody.readAllBytes()));
             System.out.println();
             
-            OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(response.getBytes());
+            }
         }
 
         public static void getHandler(HttpExchange exchange) {
-
+            try {
+                var request = new String(exchange.getRequestBody().readAllBytes());
+            } catch (IOException e) {
+                thri
+            }
+            
         }
 
         public static void postHandler(HttpExchange exchange) {
