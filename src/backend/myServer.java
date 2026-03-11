@@ -37,8 +37,13 @@ class reqHandler implements HttpHandler {
         System.out.println("Request body: " + new String(resBody.readAllBytes()));
         System.out.println();
 
-        if (exchange.getRequestMethod().equals("GET")) {
-            getHandler(exchange);
+        switch (exchange.getRequestMethod()) {
+            case "GET" -> getHandler(exchange);
+            case "POST" -> postHandler(exchange);
+            case "PUT" -> putHandler(exchange);
+            case "PATCH" -> patchHandler(exchange);
+            case "DELETE" -> deletHandler(exchange);
+            default -> throw new AssertionError();
         }
 
         try (OutputStream os = exchange.getResponseBody()) {
