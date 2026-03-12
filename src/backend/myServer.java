@@ -1,12 +1,8 @@
 package backend;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
+import java.io.*;
+import java.net.*;
 import java.util.HashMap;
 
 public class myServer {
@@ -16,68 +12,7 @@ public class myServer {
         server.createContext("/test", new reqHandler());
         server.setExecutor(null);
         server.start();
-    }
-}
-
-class reqHandler implements HttpHandler {
-    static DB db = new DB();
-    @Override
-    public void handle(HttpExchange exchange) throws IOException {
-        String response = "Server is working";
-        exchange.sendResponseHeaders(200, response.getBytes().length);
-        InputStream resBody = exchange.getRequestBody();
-        resBody.toString();
-
-       
-        System.out.println("Request path: " + exchange.getHttpContext().getPath());
-        System.out.println("Request local address: " + exchange.getLocalAddress());
-        System.out.println("Request Protocol: " + exchange.getProtocol());
-        System.out.println("Request Headers: " + exchange.getRequestHeaders().keySet());
-        System.out.println("Request method: " + exchange.getRequestMethod());
-        System.out.println("Request body: " + new String(resBody.readAllBytes()));
-        System.out.println();
-
-        switch (exchange.getRequestMethod()) {
-            case "GET" -> getHandler(exchange);
-            case "POST" -> postHandler(exchange);
-            case "PUT" -> putHandler(exchange);
-            case "PATCH" -> patchHandler(exchange);
-            case "DELETE" -> deletHandler(exchange);
-            default -> throw new AssertionError();
-        }
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(response.getBytes());
-        }
-    }
-
-    public static void getHandler(HttpExchange exchange) {
-        try {
-            var request = new String(exchange.getRequestBody().readAllBytes());
-            if ("userList".equals(request)) {
-                
-            }
-            System.out.println(db.getUserList());
-        } catch (IOException e) {
-
-        }
-
-    }
-
-    public static void postHandler(HttpExchange exchange) {
-
-    }
-
-    public static void putHandler(HttpExchange exchange) {
-
-    }
-
-    public static void patchHandler(HttpExchange exchange) {
-
-    }
-
-    public static void deletHandler(HttpExchange exchange) {
-
+        System.out.println("Server running");
     }
 }
 
